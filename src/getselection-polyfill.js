@@ -80,12 +80,7 @@
                 // TODO
                 Selection.selectAllChildren = function () {
     
-                }
-                
-                //TODO
-                Selection.selectAllChildren = function () {
-    
-                }
+                }                
 
                 //TODO
                 Selection.addRange = function () {
@@ -104,17 +99,36 @@
 
                 //TODO
                 Selection.deleteFromDocument = function () {
-    
+                    Selection.ieRange.text = '';
                 }
 
                 //TODO
                 Selection.toString = function () {
-    
+                    return Selection.Text;
                 }
 
-                //TODO
-                Selection.containsNode = function () {
-    
+                // Check if node is contained. First we check with the ieRange if the range in question is already inside.
+                // If we are interested about it being partially connected, we compare the start and end points.
+                Selection.containsNode = function (aNode, aPartlyContained) {
+                    var result = false;
+                    // check if aNode is a node element
+                    if (typeof aNode.nodeName != 'undefined') {
+                        var aRange = document.body.createTextRange();
+                        aRange.moveToElementText(aNode);
+
+                        if (Selection.ieRange.inRange(aRange)) {
+                            result = true;
+                        } else if (aPartlyContained == true) {
+                            if (Selection.ieRange.compareEndPoints('StartToEnd', aRange) == -1 && 
+                                Selection.ieRange.compareEndPoints('StartToStart', aRange) != -1) {
+                                result = true;
+                            } else if (Selection.ieRange.compareEndPoints('EndToStart', aRange) != -1 &&
+                                Selection.ieRange.compareEndPoints('EndToEnd', aRange) == -1) {
+                                result = true;
+                            }
+                        }                        
+                    }
+                    return result;
                 }            
 
             }
@@ -124,11 +138,8 @@
             }
             
 
-
-
-
-
-
+            InitSelectionMembers();
+            InitRangeMembers();
 
             return Selection;
         }
