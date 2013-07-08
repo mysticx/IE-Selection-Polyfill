@@ -53,7 +53,23 @@
                 Selection.Range.endOffset = elemResult.innerOffset;
             }
             
-            function InitSelectionMembers() {
+
+            function InitSelectionProperties() {
+
+                Selection.anchorNode = Selection.Range.startContainer;
+
+                Selection.anchorOffset = Selection.Range.startOffset;
+
+                Selection.focusNode = Selection.Range.endContainer;
+
+                Selection.focusOffset = Selection.Range.endOffset;
+
+                Selection.isCollapsed = Selection.ieRange.compareEndPoints('StartToEnd', Selection.ieRange) == 0 ? true : false;
+
+                // Temporary, until I support multiple ranges.
+                Selection.rangeCount = 1;
+            }
+            function InitSelectionMethods() {
                 // Currently the polyfill does not support getting specific ranges
                 Selection.getRangeAt = function (index) {
                     return Selection.Range;
@@ -133,13 +149,22 @@
 
             }
 
-            function InitRangeMembers() {
+            function InitRangeProperties() {
 
             }
-            
+            function InitRangeMethods() {
+                Selection.Range.collapsed = Selection.ieRange.compareEndPoints('StartToEnd', Selection.ieRange) == 0 ? true : false;
 
-            InitSelectionMembers();
-            InitRangeMembers();
+                Selection.Range.commonAncestorContainer = Selection.ieRange.parentElement;
+            }
+
+            
+            CalculateOffsets();
+            InitSelectionProperties();
+            InitSelectionMethods();
+
+            InitRangeProperties();
+            InitRangeMethods();
 
             return Selection;
         }
