@@ -1,18 +1,31 @@
 ﻿(function (undefined) {
     if (document.selection && typeof window.getSelection === 'undefined') {
+        var GetNodeText = function (node) {
+            var result = undefined;
+            if (node.innerText) {
+                result = node.innerText;
+            } else if (node.textContent) {
+                result = node.innerText;
+            } else if (node.nodeValue) {
+                result = node.nodeValue;
+            }
+            
+            return result;
+        }
+
         var FindElementByPos = function (node, offset, result) {
             for (var i = 0; i < node.childNodes.length && !result.found; i++) {
                 if (node.childNodes[i].nodeType == 3) {
-                    if (offset <= $(node.childNodes[i]).text().length + result.innerOffset) {
+                    if (offset <= GetNodeText(node.childNodes[i]).length + result.innerOffset) {
                         result.found = true;
                         result.innerOffset = offset - result.innerOffset;
                         result.element = node.childNodes[i];
                         break;
                     } else {
-                        result.innerOffset += node.childNodes[i].length;
+                        result.innerOffset += GetNodeText(node.childNodes[i]).length;
                     }
                 } else if (node.childNodes[i].nodeType == 3) {
-                    result.innerOffset += $(node.childNodes[i]).text().length;
+                    result.innerOffset += GetNodeText(node.childNodes[i]).length;
                 } else {
                     FindElementByPos(node.childNodes[i], offset, result);
                 }
@@ -150,12 +163,55 @@
             }
 
             function InitRangeProperties() {
-
-            }
-            function InitRangeMethods() {
                 Selection.Range.collapsed = Selection.ieRange.compareEndPoints('StartToEnd', Selection.ieRange) == 0 ? true : false;
 
                 Selection.Range.commonAncestorContainer = Selection.ieRange.parentElement;
+
+                // Rest are in CalculateOffsets method
+            }
+
+            function InitRangeMethods() {
+
+                Selection.Range.setStart = function (startNode, startOffset) {
+                    if (GetNodeText(startNode).length >= startOffset && startOffset >= 0) {
+                        var tempRange = document.body.createTextRange();
+                        tempRange.moveToElementText(startNode);
+                        tempRange.moveStart('character', startOffset);
+                        Selection.ieRange.setEndPoint('StartToStart', tempRange);
+                        Selection.ieRange.select();
+                    }
+                }
+
+                Selection.Range.setEnd = function (startNode, startOffset) {
+                    if (GetNodeText(startNode).length >= startOffset && startOffset >= 0) {
+                        var tempRange = document.body.createTextRange();
+                        tempRange.moveToElementText(startNode);
+                        tempRange.moveEnd('character', -(GetNodeText(startNode).length - startOffset + 1));
+                        Selection.ieRange.setEndPoint('EndToEnd', tempRange);
+                        Selection.ieRange.select();
+                    }
+                }
+                Selection.Range.setStartBefore = function () {
+
+                }
+                Selection.Range.setStartAfter = function () {
+
+                }
+                Selection.Range.setEndBefore = function () {
+
+                }
+                Selection.Range.setEndAfter = function () {
+
+                }
+                Selection.Range.selectNode = function () {
+
+                }
+                Selection.Range.selectNodeContents = function () {
+
+                }
+                Selection.Range.collapse = function () {
+
+                }
             }
 
             
