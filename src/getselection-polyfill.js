@@ -1,5 +1,6 @@
 ﻿(function (undefined) {
     if (document.selection && typeof window.getSelection === 'undefined') {
+
         var GetNodeText = function (node) {
             var result = undefined;
             if (node.innerText) {
@@ -11,6 +12,14 @@
             }
             
             return result;
+        }
+
+        var GetNodeIndex = function (child) {
+            var i = 1;
+            while ((child = child.previousSibling) != null)
+                i++;
+
+            return i;
         }
 
         var FindElementByPos = function (node, offset, result) {
@@ -181,7 +190,6 @@
                         Selection.ieRange.select();
                     }
                 }
-
                 Selection.Range.setEnd = function (startNode, startOffset) {
                     if (GetNodeText(startNode).length >= startOffset && startOffset >= 0) {
                         var tempRange = document.body.createTextRange();
@@ -191,25 +199,89 @@
                         Selection.ieRange.select();
                     }
                 }
-                Selection.Range.setStartBefore = function () {
-
+                Selection.Range.setStartBefore = function (node) {
+                    if (node.parentNode && node.parentNode != null) {
+                        Selection.Range.startContainer = node.parentNode;
+                        Selection.Range.startOffset = GetNodeIndex(node);
+                    } else {
+                        throw new Error("InvalidNodeTypeError");
+                    }
                 }
                 Selection.Range.setStartAfter = function () {
-
+                    if (node.parentNode && node.parentNode != null) {
+                        Selection.Range.startContainer = node.parentNode;
+                        Selection.Range.startOffset = GetNodeIndex(node) + 1;
+                    } else {
+                        throw new Error("InvalidNodeTypeError");
+                    }
                 }
                 Selection.Range.setEndBefore = function () {
-
+                    if (node.parentNode && node.parentNode != null) {
+                        Selection.Range.endContainer = node.parentNode;
+                        Selection.Range.endOffset = GetNodeIndex(node);
+                    } else {
+                        throw new Error("InvalidNodeTypeError");
+                    }
                 }
                 Selection.Range.setEndAfter = function () {
-
+                    if (node.parentNode && node.parentNode != null) {
+                        Selection.Range.endContainer = node.parentNode;
+                        Selection.Range.endOffset = GetNodeIndex(node) + 1;
+                    } else {
+                        throw new Error("InvalidNodeTypeError");
+                    }
                 }
-                Selection.Range.selectNode = function () {
-
+                Selection.Range.selectNode = function (node) {
+                    if (node.parentNode && node.parentNode != null) {
+                        Selection.Range.startContainer = node.parentNode;
+                        Selection.Range.startOffset = GetNodeIndex(node);
+                        Selection.Range.endContainer = node.parentNode;
+                        Selection.Range.endOffset = GetNodeIndex(node) + 1;
+                    } else {
+                        throw new Error("InvalidNodeTypeError");
+                    }
                 }
-                Selection.Range.selectNodeContents = function () {
-
+                Selection.Range.selectNodeContents = function (node) {
+                    Selection.ieRange.moveToElementText(node);
                 }
-                Selection.Range.collapse = function () {
+                Selection.Range.collapse = function (toStart) {
+                    if (toStart) {
+                        Selection.ieRange.setEndPoint('EndToStart', Selection.ieRange);
+                    } else {
+                        Selection.ieRange.setEndPoint('StartToEnd', Selection.ieRange);
+                    }
+                }
+
+                Range.cloneContents = function () {
+    
+                }
+
+                Range.deleteContents = function () {
+    
+                }
+
+                Range.extractContents = function () {
+    
+                }
+
+                Range.insertNode = function () {
+    
+                }
+
+                Range.surroundContents = function () {
+    
+                }
+
+                Range.compareBoundaryPoints = function () {
+    
+                }
+                Range.cloneRange = function () {
+    
+                }
+                Range.detach = function () {
+    
+                }
+                Range.toString = function () {
 
                 }
             }
